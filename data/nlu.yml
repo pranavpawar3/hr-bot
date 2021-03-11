@@ -120,6 +120,21 @@ nlu:
     - i want to take off for [three](NUMEX) days
     - I want to apply for [6](NUMEX) days leave
 
+- intent: apply_for_reimbursement
+  examples: |
+    - I wish to apply for travel reimbursement
+    - Applying for reimbursement
+    - Travel reimbursement
+    - Food reimbursement request
+    - Travel reimbursement request
+    - Kindly register my reimbursement request
+    - Can you register my reimbursement request?
+    - I wish to reimburse my travel expenses
+    - Want to reimburse the food expenses
+    - Can you reimburse my flight expenses of $ [3000](NUMEX)?
+    - Can you reimburse my food expenses of $ [200](NUMEX)?
+
+
 - intent: bot_challenge
   examples: |
     - are you a bot?

@@ -118,6 +118,53 @@ class ActionSubmitLogInForm(Action):
                                  Employee_ID=emp_id,
                                  )
 
+class ActionApplyForReimbursement(Action):
+    def name(self) -> Text:
+        return "action_submit_apply_for_reimbursement"
+
+    def run(
+        self,
+        dispatcher,
+        tracker: Tracker,
+        domain: "DomainDict",
+    ) -> List[Dict[Text, Any]]:
+
+        myclient = pymongo.MongoClient('mongodb://192.168.1.104:27017/')
+        db = myclient['EMP-DB']
+        col = db["Employee_DB"]
+
+        amount = int(tracker.get_slot("amount"))
+        reimbursement_type = tracker.get_slot("reimbursement_type")
+        emp_id = tracker.get_slot("EMP_ID")
+
+        emp_data = col.find({'_id':emp_id})[0]
+        manager = emp_data['Manager']
+
+        request_col = db["Request_DB"]
+        try:
+            probably_unique_R = "-".join([str(pd.to_datetime("now")),emp_id,reimbursement_type,str(amount)])
+            SHA1_ID_R = str(uuid.uuid5(uuid.NAMESPACE_URL,probably_unique_R))
+            # ref -- https://docs.python.org/3/library/uuid.html
+
+            insert = {
+                "_id":SHA1_ID_R,
+                "datetime" : pd.to_datetime("now"),
+                "EMP_ID" : emp_id,
+                "Manager" : manager,
+                "Request_Type": f"reimbursement_request - {reimbursement_type}",
+                "Request_Status" : "Opened",
+                "Remarks" : f"{reimbursement_type} reimbursement request of {amount}"
+            }
+            request_col.insert_one(insert)
+            dispatcher.utter_message(template="utter_reimbursement_request_upload_doc",
+                                    request_id=SHA1_ID_R)
+            
+        except:
+            logging.info(f'Data not available for Employee {emp_id}')
+            dispatcher.utter_message(template="utter_no_data_available",
+                                 Employee_ID=emp_id,
+                                 )
+
 class ActionApplyForLeave(Action):
     def name(self) -> Text:
         return "action_apply_for_leave"
@@ -142,41 +189,41 @@ class ActionApplyForLeave(Action):
         manager = emp_data['Manager']
 
         request_col = db["Request_DB"]
-        # try:
-        leaves_left = int(emp_data['leaves_cap'] - emp_data['leaves_taken'])
-        print(leaves_left, no_of_days)
-        if leaves_left>=no_of_days:
-            probably_unique = "-".join([str(pd.to_datetime("now")),emp_id,start_date,end_date,str(no_of_days)])
-            SHA1_ID = str(uuid.uuid5(uuid.NAMESPACE_URL,probably_unique))
-            # ref -- https://docs.python.org/3/library/uuid.html
+        try:
+            leaves_left = int(emp_data['leaves_cap'] - emp_data['leaves_taken'])
 
-            insert = {
-                "_id":SHA1_ID,
-                "datetime" : pd.to_datetime("now"),
-                "EMP_ID" : emp_id,
-                "Manager" : manager,
-                "Request_Type": "leave_request",
-                "Request_Status" : "Opened",
-                "Remarks" : f"Leave request for {no_of_days} days. Start Date - {start_date}, End date - {end_date}"
-            }
-            request_col.insert_one(insert)
-            dispatcher.utter_message(template="utter_leave_request_submitted",
-                                    request_id=SHA1_ID)
+            if leaves_left>=no_of_days:
+                probably_unique = "-".join([str(pd.to_datetime("now")),emp_id,start_date,end_date,str(no_of_days)])
+                SHA1_ID = str(uuid.uuid5(uuid.NAMESPACE_URL,probably_unique))
+                # ref -- https://docs.python.org/3/library/uuid.html
 
-            # update the Employee DB 
-            new_leave_taken = int(emp_data['leaves_taken'])+no_of_days
-            myquery = { "_id": emp_id }
-            newvalues = { "$set": { "leaves_taken":new_leave_taken} }
-            col.update_one(myquery, newvalues)
+                insert = {
+                    "_id":SHA1_ID,
+                    "datetime" : pd.to_datetime("now"),
+                    "EMP_ID" : emp_id,
+                    "Manager" : manager,
+                    "Request_Type": "leave_request",
+                    "Request_Status" : "Opened",
+                    "Remarks" : f"Leave request for {no_of_days} days. Start Date - {start_date}, End date - {end_date}"
+                }
+                request_col.insert_one(insert)
+                dispatcher.utter_message(template="utter_leave_request_submitted",
+                                        request_id=SHA1_ID)
 
-        else:
-            dispatcher.utter_message(template="utter_no_leaves_available")
+                # update the Employee DB 
+                new_leave_taken = int(emp_data['leaves_taken'])+no_of_days
+                myquery = { "_id": emp_id }
+                newvalues = { "$set": { "leaves_taken":new_leave_taken} }
+                col.update_one(myquery, newvalues)
 
-        # except:
-        #     logging.info(f'Data not available for Employee {emp_id}')
-        #     dispatcher.utter_message(template="utter_no_data_available",
-        #                          Employee_ID=emp_id,
-        #                          )
+            else:
+                dispatcher.utter_message(template="utter_no_leaves_available")
+
+        except:
+            logging.info(f'Data not available for Employee {emp_id}')
+            dispatcher.utter_message(template="utter_no_data_available",
+                                 Employee_ID=emp_id,
+                                 )
 
 class ActionSubmitLeaveBalance(Action):
     def name(self) -> Text:

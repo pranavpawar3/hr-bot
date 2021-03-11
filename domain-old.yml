@@ -62,13 +62,13 @@ slots:
     initial_value: null
     auto_fill: true
     influence_conversation: false
-  amount:
+  reimbursement_type:
     type: rasa.shared.core.slots.AnySlot
     initial_value: null
     auto_fill: true
     influence_conversation: false
-  reimbursement_type:
-    type: rasa.shared.core.slots.UnfeaturizedSlot
+  amount:
+    type: rasa.shared.core.slots.AnySlot
     initial_value: null
     auto_fill: true
     influence_conversation: false
@@ -129,14 +129,10 @@ responses:
   - text: |-
       Sorry, your leave cap is already reached!
       You cannot apply for more paid leaves.
-  utter_ask_reimbursement_type:
-  - text: What is the reimbursement type? (Travel/ Food/ etc.)
-  utter_ask_amount:
-  - text: How much is the claim amount?
   utter_reimbursement_request_upload_doc:
   - text: |-
       Almost there, upload your bill/ reference doc for processing the reimbursement
-      Your request ID is {request_id}
+      Your request ID is {SHA1_ID_R}
       Visit this page and upload necessary documents! (upload a .zip version in case of multiple files)
       Link -- <sample link>
 actions:
@@ -147,14 +143,13 @@ actions:
 - action_apply_for_leave
 - action_reset_all_slots
 - action_apply_for_reimbursement
-- action_submit_apply_for_reimbursement
 forms:
   reimbursement_form:
+    reimbursement_type:
+    - type: from_text
     amount:
     - entity: NUMEX
       type: from_entity
-    reimbursement_type:
-    - type: from_text
   start_end_form:
     end_date:
     - type: from_text

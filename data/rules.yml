@@ -75,3 +75,21 @@ rules:
   - slot_was_set:
     - requested_slot: null
   - action: action_apply_for_leave
+
+- rule: Apply for reimbursement
+  steps:
+  - intent: apply_for_reimbursement
+  - action: reimbursement_form
+  - active_loop: reimbursement_form
+
+- rule: Submit reimbursement_form
+  condition:
+  # Condition that form is active.
+  - active_loop: reimbursement_form
+  steps:
+  # Form is deactivated
+  - action: reimbursement_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_submit_apply_for_reimbursement

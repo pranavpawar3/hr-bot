@@ -26,7 +26,7 @@ def allowed_file(filename):
 app = Flask(__name__)
 
 app.config['UPLOAD_FOLDER'] = 'uploads/'
-app.config['ALLOWED_EXTENSIONS'] = set(['pdf','png', 'jpg', 'jpeg','PNG','JPEG','JPG'])
+app.config['ALLOWED_EXTENSIONS'] = set(['.zip','pdf','png', 'jpg', 'jpeg','PNG','JPEG','JPG'])
 
 @app.route('/')
 def index():
