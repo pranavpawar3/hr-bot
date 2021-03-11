@@ -1,0 +1,77 @@
+version: "2.0"
+
+rules:
+
+- rule: Ask to login after greeting
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - action: action_reset_all_slots
+  - action: login_form
+  - active_loop: login_form
+
+- rule: Submit login Form
+  condition:
+  # Condition that form is active.
+  - active_loop: login_form
+  steps:
+  # Form is deactivated
+  - action: login_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_submit_login_form
+
+- rule: Logout, clear all slots
+  steps:
+  - intent: logout
+  - action: action_reset_all_slots
+  - action: utter_logged_out
+
+- rule: Say goodbye anytime the user says goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- rule: Say 'I am a bot' anytime the user challenges
+  steps:
+  - intent: bot_challenge
+  - action: utter_iamabot
+  
+- rule: Say welcome to thankyou
+  steps:
+  - intent: thankyou
+  - action: utter_welcome
+
+- rule: Activate leave balance Form
+  steps:
+  - intent: leave_balance
+  - action: action_submit_leave_balance_form
+
+- rule: Activate PTO Balance Form
+  steps:
+  - intent: pto_balance
+  - action: action_submit_pto_balance_form
+
+- rule: Activate Fetch Payslip Form
+  steps:
+  - intent: fetch_payslip
+  - action: action_submit_fetch_payslip_form
+
+- rule: Apply for leave
+  steps:
+  - intent: apply_for_leave
+  - action: start_end_form
+  - active_loop: start_end_form
+
+- rule: Submit start end form
+  condition:
+  # Condition that form is active.
+  - active_loop: start_end_form
+  steps:
+  # Form is deactivated
+  - action: start_end_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_apply_for_leave

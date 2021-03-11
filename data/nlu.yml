@@ -1,0 +1,132 @@
+version: "2.0"
+nlu:
+- intent: greet
+  examples: |
+    - hey
+    - hello
+    - hi
+    - hello there
+    - good morning
+    - good evening
+    - moin
+    - hey there
+    - let's go
+    - hey dude
+    - goodmorning
+    - goodevening
+    - good afternoon
+    - Hi
+- intent: goodbye
+  examples: |
+    - good afternoon
+    - cu
+    - good by
+    - cee you later
+    - good night
+    - bye
+    - goodbye
+    - have a nice day
+    - see you around
+    - bye bye
+    - see you later
+- intent: affirm
+  examples: |
+    - yes
+    - y
+    - indeed
+    - of course
+    - that sounds good
+    - correct
+- intent: deny
+  examples: |
+    - no
+    - n
+    - never
+    - I don't think so
+    - don't like that
+    - no way
+    - not really
+- intent: thankyou
+  examples: |
+    - thank you goodbye
+    - okay thank you goodbye
+    - thank you bye
+    - um okay thank you good bye
+    - thank you
+    - and thats all thank you and good bye
+    - okay thank you
+    - thanks
+    - thanks goodbye
+    - thank you and good bye
+    - Thanks!
+    - Thanks
+
+- intent: logout
+  examples: |
+    - logout me
+    - I would like to logout
+    - logout
+    - LOGOUT
+    - log out
+    - logout please
+    - log me out
+
+- intent: leave_balance
+  examples: |
+    - Hey, what's my leave balance?
+    - How many leaves do I have left?
+    - How many more leaves can I take?
+    - Can you check my leaves balance?
+    - Leave balance please
+    - do I have leaves left?
+    - Hey, this is [AX-4563](employee_id), can you check my leave balance?
+    - How many leaves left for [IB-3536](employee_id)?
+    - I am Pranav Pawar [EH-7895](employee_id), how many leaves do I have left?
+    - what is my leave balance?
+    - check leave balance
+    - Whats is my leave balance?
+
+- intent: pto_balance
+  examples: |
+    - Can you check my PTO balance?
+    - How much PTO do I have left?
+    - Check my PTO balance please
+    - Can I take more PTO?
+    - I am [MS-2348](employee_id), can you check my PTO balance?
+    - I need to check my PTO balance, please check
+    - Kindly inform me my PTO balance.
+    - do I have PTO left anymore?
+    - Show my PTO balance
+
+- intent: fetch_payslip
+  examples: |
+    - Can you share my latest payslip?
+    - Kindly show me my latest payslip?
+    - Fetch my payslip please
+    - I would like to see my payslip, the latest one
+    - I wish to check my payslip
+    - Please show the latest payslip
+    - Show me the payslip for last month
+    - Fetch the payslip
+
+- intent: apply_for_leave
+  examples: |
+    - I want to take a leave
+    - Applying for leave
+    - I want some time off for [4](NUMEX) days
+    - Can you register my leave request?
+    - I wish to apply for leave for [2](NUMEX) days
+    - Can you process my request of leave of [9](NUMEX) days
+    - i want to take off for [three](NUMEX) days
+    - I want to apply for [6](NUMEX) days leave
+
+- intent: bot_challenge
+  examples: |
+    - are you a bot?
+    - are you a human?
+    - am I talking to a bot?
+    - am I talking to a human?
+
+- regex: employee_id
+  examples: |
+    - [a-z]{2}-[0-9]{4}

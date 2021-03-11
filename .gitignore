@@ -1,0 +1,4 @@
+*.zip 
+models/
+env/
+__pycache__/

@@ -1,0 +1,143 @@
+version: '2.0'
+config:
+  store_entities_as_slots: true
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+intents:
+- logout:
+    use_entities: true
+- apply_for_leave:
+    use_entities: true
+- fetch_payslip:
+    use_entities: true
+- leave_balance:
+    use_entities: true
+- pto_balance:
+    use_entities: true
+- thankyou:
+    use_entities: true
+- greet:
+    use_entities: true
+- goodbye:
+    use_entities: true
+- affirm:
+    use_entities: true
+- deny:
+    use_entities: true
+- bot_challenge:
+    use_entities: true
+- mood_unhappy:
+    use_entities: true
+- mood_great:
+    use_entities: true
+entities:
+- employee_id
+- NUMEX
+slots:
+  EMP_ID:
+    type: rasa.shared.core.slots.AnySlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+  password:
+    type: rasa.shared.core.slots.AnySlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+  start_date:
+    type: rasa.shared.core.slots.AnySlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+  end_date:
+    type: rasa.shared.core.slots.AnySlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+  no_of_days:
+    type: rasa.shared.core.slots.AnySlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+  requested_slot:
+    type: rasa.shared.core.slots.UnfeaturizedSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+responses:
+  utter_greet:
+  - text: Hey! Let's log you in.
+  utter_welcome:
+  - text: My pleasure!
+  utter_cheer_up:
+  - image: https://i.imgur.com/nGF1K8f.jpg
+    text: 'Here is something to cheer you up:'
+  utter_did_that_help:
+  - text: Did that help you?
+  utter_happy:
+  - text: Great, carry on!
+  utter_goodbye:
+  - text: Bye
+  utter_iamabot:
+  - text: I am a bot, powered by Rasa.
+  utter_leave_balance:
+  - text: Employee {Employee_ID} has {Leaves_Left} leaves left
+  utter_ask_EMP_ID:
+  - text: Please type in your Employee ID (e.g. AB-2312)
+  utter_ask_password:
+  - text: Please enter your password
+  utter_no_data_available:
+  - text: |-
+      No data available for Employee {Employee_ID}/ Invalid User! 
+      Or you don't have the access, kindly contact the admin.
+  utter_pto_balance:
+  - text: Employee {Employee_ID} has {PTO_Left} days PTO left
+  utter_invalid_password:
+  - text: Uh oh... Wrong Password. Enter "/restart" and Try logging Again.
+  utter_logged_out:
+  - text: Done! you are logged out! To start a new session enter "/restart"
+  utter_payslip_link:
+  - text: Here is you latest payslip, click on the link here -- {Payslip}
+  utter_logged_in:
+  - text: |-
+      Great! You are logged in. 
+      How can I be of help?
+  utter_ask_no_of_days:
+  - text: How many days leave do you need?
+  utter_ask_start_date:
+  - text: What is the start date?
+  utter_ask_end_date:
+  - text: What is the end date?
+  utter_leave_request_submitted:
+  - text: |-
+      Done! Leave request; request_id:{request_id} submitted.
+      You shall recieve an email from the HR manager, once its approved/ rejected.
+  utter_no_leaves_available:
+  - text: |-
+      Sorry, your leave cap is already reached!
+      You cannot apply for more paid leaves.
+actions:
+- action_submit_leave_balance_form
+- action_submit_pto_balance_form
+- action_submit_fetch_payslip_form
+- action_submit_login_form
+- action_apply_for_leave
+- action_reset_all_slots
+forms:
+  start_end_form:
+    end_date:
+    - type: from_text
+    no_of_days:
+    - entity: NUMEX
+      type: from_entity
+    start_date:
+    - entity: employee_id
+      type: from_text
+  login_form:
+    EMP_ID:
+    - entity: employee_id
+      type: from_entity
+    password:
+    - type: from_text
+e2e_actions: []
