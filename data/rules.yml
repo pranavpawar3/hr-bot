@@ -61,6 +61,7 @@ rules:
 - rule: Apply for leave
   steps:
   - intent: apply_for_leave
+  - action: action_reset_start_end_form_slots
   - action: start_end_form
   - active_loop: start_end_form
 
@@ -79,6 +80,7 @@ rules:
 - rule: Apply for reimbursement
   steps:
   - intent: apply_for_reimbursement
+  - action: action_reset_reimbursement_form_slots
   - action: reimbursement_form
   - active_loop: reimbursement_form
 
@@ -93,3 +95,22 @@ rules:
   - slot_was_set:
     - requested_slot: null
   - action: action_submit_apply_for_reimbursement
+
+- rule: Check request status
+  steps:
+  - intent: check_request_status
+  - action: action_reset_request_id
+  - action: check_request_status_form
+  - active_loop: check_request_status_form
+
+- rule: Submit check request status form
+  condition:
+  # Condition that form is active.
+  - active_loop: check_request_status_form
+  steps:
+  # Form is deactivated
+  - action: check_request_status_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_submit_check_leave_status

@@ -48,6 +48,22 @@ class ActionResetAllSlots(Action):
     def run(self, dispatcher, tracker, domain):
         return [AllSlotsReset()]
 
+class ActionResetStartEndFormSlots(Action):
+
+    def name(self):
+        return "action_reset_start_end_form_slots"
+
+    def run(self, dispatcher, tracker, domain):
+        return [SlotSet("no_of_days", None),SlotSet("start_date", None),SlotSet("end_date", None)]
+
+class ActionResetReimbursementFormSlots(Action):
+
+    def name(self):
+        return "action_reset_reimbursement_form_slots"
+
+    def run(self, dispatcher, tracker, domain):
+        return [SlotSet("amount", None),SlotSet("reimbursement_type", None)]
+
 class ValidateLoginForm(Action):
     def name(self) -> Text:
         return "login_form"
@@ -62,31 +78,6 @@ class ValidateLoginForm(Action):
                 # The slot is not filled yet. Request the user to fill this slot next.
                 return [SlotSet("requested_slot", slot_name)]
                 
-        # myclient = pymongo.MongoClient('mongodb://192.168.1.104:27017/')
-        # db = myclient['EMP-DB']
-        # collection_name = 'Employee_DB'
-        # col = db[collection_name]
-        # emp_id = tracker.get_slot("EMP_ID")
-
-        # try:
-        #     emp_data = col.find({'_id':emp_id})[0]
-        #     password = emp_data['password']
-        #     if password==tracker.get_slot('password'):
-        #         dispatcher.utter_message(template="utter_logged_in")
-        #         # print("inside run function of login form; login success")
-        #         # All slots are filled.
-        #         return [SlotSet("requested_slot", None)]
-        #     else:
-        #         dispatcher.utter_message(template="utter_invalid_password")
-        #         # print("inside run function of login form; invalid password")
-        #         return [SlotSet("password", None)]
-
-        # except:
-        #     logging.info(f'Data not available for Employee {emp_id}, Invalid User! Contact Admin')
-        #     dispatcher.utter_message(template="utter_no_data_available",
-        #                          Employee_ID=emp_id,
-        #                          )
-
 class ActionSubmitLogInForm(Action):
     def name(self) -> Text:
         return "action_submit_login_form"
@@ -107,16 +98,50 @@ class ActionSubmitLogInForm(Action):
             password = emp_data['password']
             if password==tracker.get_slot('password'):
                 dispatcher.utter_message(template="utter_logged_in")
-                # print("success; inside run function of the submit form class")
             else:
                 dispatcher.utter_message(template="utter_invalid_password")
-                # print("invalid password; inside run function of the submit form class")
-                # return [SlotSet("password", None)]
         except:
             logging.info(f'Data not available for Employee {emp_id}, Invalid User! Contact Admin')
-            dispatcher.utter_message(template="utter_no_data_available",
+            dispatcher.utter_message(template="utter_no_emp_data_available",
                                  Employee_ID=emp_id,
                                  )
+
+class ActionCheckRequestStatus(Action):
+    def name(self) -> Text:
+        return "action_submit_check_leave_status"
+
+    def run(
+        self,
+        dispatcher,
+        tracker: Tracker,
+        domain: "DomainDict",
+    ) -> List[Dict[Text, Any]]:
+
+        myclient = pymongo.MongoClient('mongodb://192.168.1.104:27017/')
+        db = myclient['EMP-DB']
+        col = db["Employee_DB"]
+        request_col = db["Request_DB"]
+        request_id = tracker.get_slot("request_id")
+        emp_data = col.find({'_id':emp_id})[0]
+        password = emp_data['password']
+        if tracker.get_slot('password') is not None:
+            try:
+                request_data = request_col.find({'_id':request_id})[0]
+                status = request_data['Request_Status']
+                request_type = request_data['Request_Type']
+                dispatcher.utter_message(template="utter_request_status",
+                                        status=status,
+                                        request_type=request_type,
+                                        request_id=request_id)
+            except:
+                logging.info(f'Request Data not available for Request {request_id}')
+                dispatcher.utter_message(template="utter_request_data_not_available",
+                                    request_id=request_id,
+                                    )
+        else:
+            dispatcher.utter_message(template="utter_not_logged_in")
+
+
 
 class ActionApplyForReimbursement(Action):
     def name(self) -> Text:
@@ -141,29 +166,32 @@ class ActionApplyForReimbursement(Action):
         manager = emp_data['Manager']
 
         request_col = db["Request_DB"]
-        try:
-            probably_unique_R = "-".join([str(pd.to_datetime("now")),emp_id,reimbursement_type,str(amount)])
-            SHA1_ID_R = str(uuid.uuid5(uuid.NAMESPACE_URL,probably_unique_R))
-            # ref -- https://docs.python.org/3/library/uuid.html
+        if tracker.get_slot('password') is not None:
+            try:
+                probably_unique_R = "-".join([str(pd.to_datetime("now")),emp_id,reimbursement_type,str(amount)])
+                SHA1_ID_R = str(uuid.uuid5(uuid.NAMESPACE_URL,probably_unique_R))
+                # ref -- https://docs.python.org/3/library/uuid.html
 
-            insert = {
-                "_id":SHA1_ID_R,
-                "datetime" : pd.to_datetime("now"),
-                "EMP_ID" : emp_id,
-                "Manager" : manager,
-                "Request_Type": f"reimbursement_request - {reimbursement_type}",
-                "Request_Status" : "Opened",
-                "Remarks" : f"{reimbursement_type} reimbursement request of {amount}"
-            }
-            request_col.insert_one(insert)
-            dispatcher.utter_message(template="utter_reimbursement_request_upload_doc",
-                                    request_id=SHA1_ID_R)
-            
-        except:
-            logging.info(f'Data not available for Employee {emp_id}')
-            dispatcher.utter_message(template="utter_no_data_available",
-                                 Employee_ID=emp_id,
-                                 )
+                insert = {
+                    "_id":SHA1_ID_R,
+                    "datetime" : pd.to_datetime("now"),
+                    "EMP_ID" : emp_id,
+                    "Manager" : manager,
+                    "Request_Type": f"reimbursement_request - {reimbursement_type}",
+                    "Request_Status" : "Opened",
+                    "Remarks" : f"{reimbursement_type} reimbursement request of {amount}"
+                }
+                request_col.insert_one(insert)
+                dispatcher.utter_message(template="utter_reimbursement_request_upload_doc",
+                                        request_id=SHA1_ID_R)
+                
+            except:
+                logging.info(f'Data not available for Employee {emp_id}')
+                dispatcher.utter_message(template="utter_no_emp_data_available",
+                                    Employee_ID=emp_id,
+                                    )
+        else:
+            dispatcher.utter_message(template="utter_not_logged_in")
 
 class ActionApplyForLeave(Action):
     def name(self) -> Text:
@@ -187,43 +215,49 @@ class ActionApplyForLeave(Action):
 
         emp_data = col.find({'_id':emp_id})[0]
         manager = emp_data['Manager']
+        manager_id = emp_data['Manager_ID']
 
         request_col = db["Request_DB"]
-        try:
-            leaves_left = int(emp_data['leaves_cap'] - emp_data['leaves_taken'])
+        if tracker.get_slot('password') is not None:
+            try:
+                leaves_left = int(emp_data['leaves_cap'] - emp_data['leaves_taken'])
 
-            if leaves_left>=no_of_days:
-                probably_unique = "-".join([str(pd.to_datetime("now")),emp_id,start_date,end_date,str(no_of_days)])
-                SHA1_ID = str(uuid.uuid5(uuid.NAMESPACE_URL,probably_unique))
-                # ref -- https://docs.python.org/3/library/uuid.html
+                if leaves_left>=no_of_days:
+                    probably_unique = "-".join([str(pd.to_datetime("now")),emp_id,start_date,end_date,str(no_of_days)])
+                    SHA1_ID = str(uuid.uuid5(uuid.NAMESPACE_URL,probably_unique))
+                    # ref -- https://docs.python.org/3/library/uuid.html
 
-                insert = {
-                    "_id":SHA1_ID,
-                    "datetime" : pd.to_datetime("now"),
-                    "EMP_ID" : emp_id,
-                    "Manager" : manager,
-                    "Request_Type": "leave_request",
-                    "Request_Status" : "Opened",
-                    "Remarks" : f"Leave request for {no_of_days} days. Start Date - {start_date}, End date - {end_date}"
-                }
-                request_col.insert_one(insert)
-                dispatcher.utter_message(template="utter_leave_request_submitted",
-                                        request_id=SHA1_ID)
+                    insert = {
+                        "_id":SHA1_ID,
+                        "datetime" : pd.to_datetime("now"),
+                        "EMP_ID" : emp_id,
+                        "Manager" : manager,
+                        "Manager_ID" : manager_id,
+                        "Request_Type": "leave_request",
+                        "Request_Status" : "Opened",
+                        "Remarks" : f"Leave request for {no_of_days} days. Start Date - {start_date}, End date - {end_date}"
+                    }
+                    request_col.insert_one(insert)
+                    dispatcher.utter_message(template="utter_leave_request_submitted",
+                                            request_id=SHA1_ID,
+                                            Reporting_Manager=manager)
 
-                # update the Employee DB 
-                new_leave_taken = int(emp_data['leaves_taken'])+no_of_days
-                myquery = { "_id": emp_id }
-                newvalues = { "$set": { "leaves_taken":new_leave_taken} }
-                col.update_one(myquery, newvalues)
+                    # update the Employee DB 
+                    new_leave_taken = int(emp_data['leaves_taken'])+no_of_days
+                    myquery = { "_id": emp_id }
+                    newvalues = { "$set": { "leaves_taken":new_leave_taken} }
+                    col.update_one(myquery, newvalues)
 
-            else:
-                dispatcher.utter_message(template="utter_no_leaves_available")
+                else:
+                    dispatcher.utter_message(template="utter_no_leaves_available")
 
-        except:
-            logging.info(f'Data not available for Employee {emp_id}')
-            dispatcher.utter_message(template="utter_no_data_available",
-                                 Employee_ID=emp_id,
-                                 )
+            except:
+                logging.info(f'Data not available for Employee {emp_id}')
+                dispatcher.utter_message(template="utter_no_emp_data_available",
+                                    Employee_ID=emp_id,
+                                    )
+        else:
+            dispatcher.utter_message(template="utter_not_logged_in")
 
 class ActionSubmitLeaveBalance(Action):
     def name(self) -> Text:
@@ -240,23 +274,22 @@ class ActionSubmitLeaveBalance(Action):
         collection_name = 'Employee_DB'
         col = db[collection_name]
         emp_id = tracker.get_slot("EMP_ID")
-
-        try:
-            emp_data = col.find({'_id':emp_id})[0]
-            password = emp_data['password']
-            if password==tracker.get_slot('password'):
+        if tracker.get_slot('password') is not None:
+            try:
+                emp_data = col.find({'_id':emp_id})[0]
                 leaves_left = emp_data['leaves_cap'] - emp_data['leaves_taken']
                 dispatcher.utter_message(template="utter_leave_balance",
                                         Employee_ID=emp_id,
                                         Leaves_Left=leaves_left
                                         )
-            else:
-                dispatcher.utter_message(template="utter_invalid_password")
-        except:
-            logging.info(f'Data not available for Employee {emp_id}')
-            dispatcher.utter_message(template="utter_no_data_available",
-                                 Employee_ID=emp_id,
-                                 )
+            except:
+                logging.info(f'Data not available for Employee {emp_id}')
+                dispatcher.utter_message(template="utter_no_emp_data_available",
+                                    Employee_ID=emp_id,
+                                    )
+        else:
+            dispatcher.utter_message(template="utter_not_logged_in")
+
 
 class ActionSubmitPTO(Action):
     def name(self) -> Text:
@@ -273,24 +306,22 @@ class ActionSubmitPTO(Action):
         collection_name = 'Employee_DB'
         col = db[collection_name]
         emp_id = tracker.get_slot("EMP_ID")
-        try:
-            emp_data = col.find({'_id':emp_id})[0]
-            password = emp_data['password']
-            if password==tracker.get_slot('password'):
+        if tracker.get_slot('password') is not None:
+            try:
+                emp_data = col.find({'_id':emp_id})[0]
                 pto_left = emp_data['PTO_Cap'] - emp_data['PTO_Taken']
                 dispatcher.utter_message(template="utter_pto_balance",
                                         Employee_ID=emp_id,
                                         PTO_Left=pto_left
                                         )
-            else:
-                dispatcher.utter_message(template="utter_invalid_password")
-
-        except:
-            logging.info(f'Data not available for Employee {emp_id}')
-            dispatcher.utter_message(template="utter_no_data_available",
-                                 Employee_ID=emp_id,
-                                 )
-               
+            except:
+                logging.info(f'Data not available for Employee {emp_id}')
+                dispatcher.utter_message(template="utter_no_emp_data_available",
+                                    Employee_ID=emp_id,
+                                    )
+        else:
+            dispatcher.utter_message(template="utter_not_logged_in")
+       
 class ActionSubmitFetchPayslip(Action):
     def name(self) -> Text:
         return "action_submit_fetch_payslip_form"
@@ -303,22 +334,21 @@ class ActionSubmitFetchPayslip(Action):
     ) -> List[Dict[Text, Any]]:
         myclient = pymongo.MongoClient('mongodb://192.168.1.104:27017/')
         db = myclient['EMP-DB']
-        collection_name = 'Employee_DB'
-        col = db[collection_name]
+        payslips_col = db["Payslips_DB"]
         emp_id = tracker.get_slot("EMP_ID")
-        try:
-            emp_data = col.find({'_id':emp_id})[0]
-            password = emp_data['password']
-            if password==tracker.get_slot('password'):
-                payslip = emp_data['Payslip']
+        if tracker.get_slot('password') is not None:
+            try:
+                payslip_data = payslips_col.find({'_id':emp_id})[0]
+                payslip = payslip_data['Payslip']
                 dispatcher.utter_message(template="utter_payslip_link",
                                         Payslip=payslip,
                                         )
-            else:
-                dispatcher.utter_message(template="utter_invalid_password")
 
-        except:
-            logging.info(f'Data not available for Employee {emp_id}')
-            dispatcher.utter_message(template="utter_no_data_available",
-                                 Employee_ID=emp_id,
-                                 )
+            except:
+                logging.info(f'Data not available for Employee {emp_id}')
+                dispatcher.utter_message(template="utter_no_emp_data_available",
+                                    Employee_ID=emp_id,
+                                    )
+        else:
+            dispatcher.utter_message(template="utter_not_logged_in")
+       

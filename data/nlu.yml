@@ -67,9 +67,8 @@ nlu:
     - I would like to logout
     - logout
     - LOGOUT
-    - log out
+    - logout
     - logout please
-    - log me out
 
 - intent: leave_balance
   examples: |
@@ -134,6 +133,14 @@ nlu:
     - Can you reimburse my flight expenses of $ [3000](NUMEX)?
     - Can you reimburse my food expenses of $ [200](NUMEX)?
 
+- intent: check_request_status
+  examples: |
+    - Check my request status
+    - Check my leave request status, request id is - 8cb5b7bb-2b22-54e9-997c-156a3d54130c
+    - Check my reimbursement request status
+    - Whats the status on my reimbursement request, request id is - 8cb5b7bb-2b22-54e9-997c-156a3d54130c
+    - Whats the status on Travel reimbursement request
+    - Kindly inform on my request status
 
 - intent: bot_challenge
   examples: |

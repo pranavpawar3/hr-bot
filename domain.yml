@@ -5,6 +5,8 @@ session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
 intents:
+- check_request_status:
+    use_entities: true
 - apply_for_reimbursement:
     use_entities: true
 - logout:
@@ -72,6 +74,11 @@ slots:
     initial_value: null
     auto_fill: true
     influence_conversation: false
+  request_id:
+    type: rasa.shared.core.slots.UnfeaturizedSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
   requested_slot:
     type: rasa.shared.core.slots.UnfeaturizedSlot
     initial_value: null
@@ -99,12 +106,18 @@ responses:
   - text: Please type in your Employee ID (e.g. AB-2312)
   utter_ask_password:
   - text: Please enter your password
-  utter_no_data_available:
+  utter_no_emp_data_available:
   - text: |-
       No data available for Employee {Employee_ID}/ Invalid User! 
       Or you don't have the access, kindly contact the admin.
+  utter_request_data_not_available:
+  - text: |-
+      No data available for Request ID {request_id}! 
+      Or you don't have the access, kindly contact the admin.
   utter_pto_balance:
   - text: Employee {Employee_ID} has {PTO_Left} days PTO left
+  utter_not_logged_in:
+  - text: You are not logged in, kindly hit /restart and login
   utter_invalid_password:
   - text: Uh oh... Wrong Password. Enter "/restart" and Try logging Again.
   utter_logged_out:
@@ -123,8 +136,9 @@ responses:
   - text: What is the end date?
   utter_leave_request_submitted:
   - text: |-
-      Done! Leave request; request_id:{request_id} submitted.
-      You shall recieve an email from the HR manager, once its approved/ rejected.
+      Done! request_id:{request_id} submitted.
+      Your HR Manager and Reporting Manager - {Reporting_Manager} have been notified. 
+      You shall recieve a confirmation email once its approved.
   utter_no_leaves_available:
   - text: |-
       Sorry, your leave cap is already reached!
@@ -139,6 +153,11 @@ responses:
       Your request ID is {request_id}
       Visit this page and upload necessary documents! (upload a .zip version in case of multiple files)
       Link -- <sample link>
+  utter_ask_request_id:
+  - text: Please enter your request ID.
+  utter_request_status:
+  - text: Status :- {status} for {request_type} request ID {request_id}
+
 actions:
 - action_submit_leave_balance_form
 - action_submit_pto_balance_form
@@ -148,7 +167,14 @@ actions:
 - action_reset_all_slots
 - action_apply_for_reimbursement
 - action_submit_apply_for_reimbursement
+- action_submit_check_leave_status
+- action_reset_request_id
+- action_reset_start_end_form_slots
+- action_reset_reimbursement_form_slots
 forms:
+  check_request_status_form:
+    request_id:
+    - type: from_text
   reimbursement_form:
     amount:
     - entity: NUMEX
