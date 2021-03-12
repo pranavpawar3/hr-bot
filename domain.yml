@@ -5,6 +5,8 @@ session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
 intents:
+- change_bank_details:
+    use_entities: true
 - check_request_status:
     use_entities: true
 - apply_for_reimbursement:
@@ -75,6 +77,21 @@ slots:
     auto_fill: true
     influence_conversation: false
   request_id:
+    type: rasa.shared.core.slots.UnfeaturizedSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+  Bank_Name:
+    type: rasa.shared.core.slots.UnfeaturizedSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+  account_number:
+    type: rasa.shared.core.slots.UnfeaturizedSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+  IFSC_code:
     type: rasa.shared.core.slots.UnfeaturizedSlot
     initial_value: null
     auto_fill: true
@@ -157,7 +174,14 @@ responses:
   - text: Please enter your request ID.
   utter_request_status:
   - text: Status :- {status} for {request_type} request ID {request_id}
-
+  utter_ask_Bank_Name:
+  - text: Please enter your Bank Name
+  utter_ask_account_number:
+  - text: Provide your account number
+  utter_ask_IFSC_code:
+  - text: Enter the IFSC code of your bank account
+  utter_bank_details_updated:
+  - text: Done! Your bank details are updated, the same shall reflect on your dashboard!
 actions:
 - action_submit_leave_balance_form
 - action_submit_pto_balance_form
@@ -171,7 +195,15 @@ actions:
 - action_reset_request_id
 - action_reset_start_end_form_slots
 - action_reset_reimbursement_form_slots
+- action_submit_update_bank_account
 forms:
+  bank_details_form:
+    Bank_Name:
+    - type: from_text
+    IFSC_code:
+    - type: from_text
+    account_number:
+    - type: from_text
   check_request_status_form:
     request_id:
     - type: from_text
@@ -182,14 +214,14 @@ forms:
     reimbursement_type:
     - type: from_text
   start_end_form:
-    end_date:
-    - type: from_text
     no_of_days:
     - entity: NUMEX
       type: from_entity
     start_date:
     - entity: employee_id
       type: from_text
+    end_date:
+    - type: from_text
   login_form:
     EMP_ID:
     - entity: employee_id

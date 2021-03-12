@@ -48,6 +48,14 @@ class ActionResetAllSlots(Action):
     def run(self, dispatcher, tracker, domain):
         return [AllSlotsReset()]
 
+class ActionResetRequestID(Action):
+
+    def name(self):
+        return "action_reset_request_id"
+
+    def run(self, dispatcher, tracker, domain):
+        return [SlotSet("request_id", None)]
+
 class ActionResetStartEndFormSlots(Action):
 
     def name(self):
@@ -55,6 +63,7 @@ class ActionResetStartEndFormSlots(Action):
 
     def run(self, dispatcher, tracker, domain):
         return [SlotSet("no_of_days", None),SlotSet("start_date", None),SlotSet("end_date", None)]
+
 
 class ActionResetReimbursementFormSlots(Action):
 
@@ -106,6 +115,44 @@ class ActionSubmitLogInForm(Action):
                                  Employee_ID=emp_id,
                                  )
 
+class ActionUpdateBankAccount(Action):
+    def name(self) -> Text:
+        return "action_submit_update_bank_account"
+
+    def run(
+        self,
+        dispatcher,
+        tracker: Tracker,
+        domain: "DomainDict",
+    ) -> List[Dict[Text, Any]]:
+
+        myclient = pymongo.MongoClient('mongodb://192.168.1.104:27017/')
+        db = myclient['EMP-DB']
+        bank_col = db["Bank_account_DB"]
+        col = db['Employee_DB']
+        emp_id = tracker.get_slot("EMP_ID")
+
+        Bank_Name = tracker.get_slot('Bank_Name')
+        Account_Number = tracker.get_slot('account_number')
+        IFSC_code = tracker.get_slot('IFSC_code')
+        request_id = tracker.get_slot("request_id")
+
+        if tracker.get_slot('password') is not None:
+            try:
+                myquery = { "_id": emp_id }
+                newvalues = { "$set": { "Bank_Name":Bank_Name,'Account_Number':Account_Number,'IFSC_code':IFSC_code} }
+                bank_col.update_one(myquery, newvalues)
+                dispatcher.utter_message(template="utter_bank_details_updated")
+
+            except:
+                logging.info(f'Request Data not available for Request {request_id}')
+                dispatcher.utter_message(template="utter_request_data_not_available",
+                                    request_id=request_id,
+                                    )
+        else:
+            dispatcher.utter_message(template="utter_not_logged_in")
+
+
 class ActionCheckRequestStatus(Action):
     def name(self) -> Text:
         return "action_submit_check_leave_status"
@@ -122,8 +169,8 @@ class ActionCheckRequestStatus(Action):
         col = db["Employee_DB"]
         request_col = db["Request_DB"]
         request_id = tracker.get_slot("request_id")
+        emp_id = tracker.get_slot("EMP_ID")
         emp_data = col.find({'_id':emp_id})[0]
-        password = emp_data['password']
         if tracker.get_slot('password') is not None:
             try:
                 request_data = request_col.find({'_id':request_id})[0]

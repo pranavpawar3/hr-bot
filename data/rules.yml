@@ -86,10 +86,8 @@ rules:
 
 - rule: Submit reimbursement_form
   condition:
-  # Condition that form is active.
   - active_loop: reimbursement_form
   steps:
-  # Form is deactivated
   - action: reimbursement_form
   - active_loop: null
   - slot_was_set:
@@ -105,12 +103,26 @@ rules:
 
 - rule: Submit check request status form
   condition:
-  # Condition that form is active.
   - active_loop: check_request_status_form
   steps:
-  # Form is deactivated
   - action: check_request_status_form
   - active_loop: null
   - slot_was_set:
     - requested_slot: null
   - action: action_submit_check_leave_status
+
+- rule: bank details form
+  steps:
+  - intent: change_bank_details
+  - action: bank_details_form
+  - active_loop: bank_details_form
+
+- rule: Submit bank details form
+  condition:
+  - active_loop: bank_details_form
+  steps:
+  - action: bank_details_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_submit_update_bank_account
