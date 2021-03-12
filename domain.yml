@@ -218,8 +218,7 @@ forms:
     - entity: NUMEX
       type: from_entity
     start_date:
-    - entity: employee_id
-      type: from_text
+    - type: from_text
     end_date:
     - type: from_text
   login_form:

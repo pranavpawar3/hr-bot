@@ -40,6 +40,9 @@ import pandas as pd
 import numpy as np
 import uuid
 
+from simplecrypt import encrypt, decrypt
+# the simple encryption library
+
 class ActionResetAllSlots(Action):
 
     def name(self):
@@ -104,7 +107,8 @@ class ActionSubmitLogInForm(Action):
         emp_id = tracker.get_slot("EMP_ID")
         try:
             emp_data = col.find({'_id':emp_id})[0]
-            password = emp_data['password']
+            # password = emp_data['password']
+            password = decrypt('key', emp_data['password']).decode("utf-8")
             if password==tracker.get_slot('password'):
                 dispatcher.utter_message(template="utter_logged_in")
             else:
