@@ -169,7 +169,7 @@ responses:
       Almost there, upload your bill/ reference doc for processing the reimbursement
       Your request ID is {request_id}
       Visit this page and upload necessary documents! (upload a .zip version in case of multiple files)
-      Link -- <sample link>
+      Link -- https://doc-teamfriendsofhr.ngrok.io/
   utter_ask_request_id:
   - text: Please enter your request ID.
   utter_request_status:
