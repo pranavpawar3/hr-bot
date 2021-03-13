@@ -220,7 +220,8 @@ class ActionApplyForReimbursement(Action):
 
         emp_data = col.find({'_id':emp_id})[0]
         manager = emp_data['Manager']
-
+        manager_id = emp_data['Manager_ID']
+        
         request_col = db["Request_DB"]
         if tracker.get_slot('password') is not None:
             try:
@@ -233,13 +234,15 @@ class ActionApplyForReimbursement(Action):
                     "datetime" : pd.to_datetime("now"),
                     "EMP_ID" : emp_id,
                     "Manager" : manager,
+                    "Manager_ID" : manager_id,
                     "Request_Type": f"reimbursement_request - {reimbursement_type}",
                     "Request_Status" : "Opened",
                     "Remarks" : f"{reimbursement_type} reimbursement request of {amount}"
                 }
                 request_col.insert_one(insert)
                 dispatcher.utter_message(template="utter_reimbursement_request_upload_doc",
-                                        request_id=SHA1_ID_R)
+                                        request_id=SHA1_ID_R,
+                                        link="https://doc-teamfriendsofhr.ngrok.io/")
                 
             except:
                 logging.info(f'Data not available for Employee {emp_id}')

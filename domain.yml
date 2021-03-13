@@ -153,8 +153,8 @@ responses:
   - text: What is the end date?
   utter_leave_request_submitted:
   - text: |-
-      Done! request_id:{request_id} submitted.
-      Your HR Manager and Reporting Manager - {Reporting_Manager} have been notified. 
+      Done! request_id:{request_id} submitted. \n
+      Your HR Manager and Reporting Manager - {Reporting_Manager} have been notified. \n
       You shall recieve a confirmation email once its approved.
   utter_no_leaves_available:
   - text: |-
@@ -166,10 +166,10 @@ responses:
   - text: How much is the claim amount?
   utter_reimbursement_request_upload_doc:
   - text: |-
-      Almost there, upload your bill/ reference doc for processing the reimbursement
-      Your request ID is {request_id}
-      Visit this page and upload necessary documents! (upload a .zip version in case of multiple files)
-      Link -- https://doc-teamfriendsofhr.ngrok.io/
+      Almost there, upload your bill/ reference doc for processing the reimbursement \n
+      Your request ID is {request_id}, kindly save it for reference. \n
+      Visit this page and upload necessary documents! (upload a .zip version in case of multiple files) \n
+      Link -- {link}
   utter_ask_request_id:
   - text: Please enter your request ID.
   utter_request_status:
