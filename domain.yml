@@ -214,12 +214,12 @@ forms:
     reimbursement_type:
     - type: from_text
   start_end_form:
+    end_date:
+    - type: from_text
     no_of_days:
     - entity: NUMEX
       type: from_entity
     start_date:
-    - type: from_text
-    end_date:
     - type: from_text
   login_form:
     EMP_ID:
