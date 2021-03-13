@@ -1,24 +1,8 @@
 version: "2.0"
 
 stories:
-# just keeping a redundant story, as the TEDPolicy doesnt get trained, if there are no stories
+# just keeping a redundant story, as the TEDPolicy doesnt get trained if there are no stories
 - story: happy path
   steps:
   - intent: mood_unhappy
   - action: utter_cheer_up
-
-# - story: sad path 1
-#   steps:
-#   - intent: apply_for_leave
-#   - intent: mood_unhappy
-#   - action: utter_cheer_up
-
-# - story: sad path 2
-#   steps:
-#   - intent: greet
-#   - action: utter_greet
-#   - intent: mood_unhappy
-#   - action: utter_cheer_up
-#   - action: utter_did_that_help
-#   - intent: deny
-#   - action: utter_goodbye
