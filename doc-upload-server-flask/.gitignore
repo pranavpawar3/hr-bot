@@ -1,0 +1,4 @@
+uploads/
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+upload_file_python/
