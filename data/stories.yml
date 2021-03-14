@@ -1,8 +1,37 @@
 version: "2.0"
-
 stories:
-# just keeping a redundant story, as the TEDPolicy doesnt get trained if there are no stories
 - story: happy path
   steps:
   - intent: mood_unhappy
   - action: utter_cheer_up
+- story: Story from Conversation ID 227ef626c553433a9f9b14769889171a
+  steps:
+  - intent: leave_balance
+  - action: action_submit_leave_balance_form
+  - intent: restart
+  - action: action_restart
+  - intent: greet
+  - action: utter_greet
+  - action: action_reset_all_slots
+  - action: login_form
+  - active_loop: login_form
+  - slot_was_set:
+    - requested_slot: EMP_ID
+  - intent: apply_for_leave
+    entities:
+    - employee_id: MS-1912
+  - action: login_form
+  - slot_was_set:
+    - EMP_ID: MS-1912
+  - slot_was_set:
+    - requested_slot: password
+  - intent: fetch_payslip
+  - action: login_form
+  - slot_was_set:
+    - password: password1234
+  - slot_was_set:
+    - requested_slot: null
+  - active_loop: null
+  - action: action_submit_login_form
+  - intent: leave_balance
+  - action: action_submit_leave_balance_form
