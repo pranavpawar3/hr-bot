@@ -113,6 +113,7 @@ class ActionSubmitLogInForm(Action):
                 dispatcher.utter_message(template="utter_logged_in")
             else:
                 dispatcher.utter_message(template="utter_invalid_password")
+                return [SlotSet("password", None)]
         except:
             logging.info(f'Data not available for Employee {emp_id}, Invalid User! Contact Admin')
             dispatcher.utter_message(template="utter_no_emp_data_available",
