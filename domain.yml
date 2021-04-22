@@ -37,6 +37,8 @@ intents:
     use_entities: true
 - mood_great:
     use_entities: true
+- restart:
+    use_entities: true
 entities:
 - employee_id
 - NUMEX
@@ -126,7 +128,7 @@ responses:
   utter_no_emp_data_available:
   - text: |-
       No data available for Employee {Employee_ID}/ Invalid User! 
-      Or you don't have the access, kindly contact the admin.
+      Or you don't have the access, kindly contact the admin. To start a new session enter "/restart", and hit a "Hi"!
   utter_request_data_not_available:
   - text: |-
       No data available for Request ID {request_id}! 
@@ -136,9 +138,9 @@ responses:
   utter_not_logged_in:
   - text: You are not logged in, kindly hit /restart and login
   utter_invalid_password:
-  - text: Uh oh... Wrong Password. Enter "/restart" and Try logging Again.
+  - text: Uh oh... Wrong Password. Enter "/restart" and Try logging Again. And hit and "Hi" to start with!
   utter_logged_out:
-  - text: Done! you are logged out! To start a new session enter "/restart"
+  - text: Done! you are logged out! To start a new session enter "/restart", and hit a "Hi"!
   utter_payslip_link:
   - text: Here is you latest payslip, click on the link here -- {Payslip}
   utter_logged_in:
@@ -217,8 +219,7 @@ forms:
     end_date:
     - type: from_text
     no_of_days:
-    - entity: NUMEX
-      type: from_entity
+    - type: from_text
     start_date:
     - type: from_text
   login_form:

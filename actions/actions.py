@@ -100,7 +100,7 @@ class ActionSubmitLogInForm(Action):
         domain: "DomainDict",
     ) -> List[Dict[Text, Any]]:
         # myclient = pymongo.MongoClient('mongodb://192.168.1.104:27017/')
-        myclient = pymongo.MongoClient('mongodb://2.tcp.ngrok.io:14374/')
+        myclient = pymongo.MongoClient('mongodb://4.tcp.ngrok.io:14455/')
         db = myclient['EMP-DB']
         collection_name = 'Employee_DB'
         col = db[collection_name]
@@ -132,7 +132,7 @@ class ActionUpdateBankAccount(Action):
     ) -> List[Dict[Text, Any]]:
 
         # myclient = pymongo.MongoClient('mongodb://192.168.1.104:27017/')
-        myclient = pymongo.MongoClient('mongodb://2.tcp.ngrok.io:14374/')
+        myclient = pymongo.MongoClient('mongodb://4.tcp.ngrok.io:14455/')
         
         db = myclient['EMP-DB']
         bank_col = db["Bank_account_DB"]
@@ -172,7 +172,7 @@ class ActionCheckRequestStatus(Action):
     ) -> List[Dict[Text, Any]]:
 
         # myclient = pymongo.MongoClient('mongodb://192.168.1.104:27017/')
-        myclient = pymongo.MongoClient('mongodb://2.tcp.ngrok.io:14374/')
+        myclient = pymongo.MongoClient('mongodb://4.tcp.ngrok.io:14455/')
         db = myclient['EMP-DB']
         col = db["Employee_DB"]
         request_col = db["Request_DB"]
@@ -210,11 +210,11 @@ class ActionApplyForReimbursement(Action):
     ) -> List[Dict[Text, Any]]:
 
         # myclient = pymongo.MongoClient('mongodb://192.168.1.104:27017/')
-        myclient = pymongo.MongoClient('mongodb://2.tcp.ngrok.io:14374/')
+        myclient = pymongo.MongoClient('mongodb://4.tcp.ngrok.io:14455/')
         db = myclient['EMP-DB']
         col = db["Employee_DB"]
 
-        amount = int(tracker.get_slot("amount"))
+        amount = str(tracker.get_slot("amount"))
         reimbursement_type = tracker.get_slot("reimbursement_type")
         emp_id = tracker.get_slot("EMP_ID")
 
@@ -264,7 +264,7 @@ class ActionApplyForLeave(Action):
     ) -> List[Dict[Text, Any]]:
 
         # myclient = pymongo.MongoClient('mongodb://192.168.1.104:27017/')
-        myclient = pymongo.MongoClient('mongodb://2.tcp.ngrok.io:14374/')
+        myclient = pymongo.MongoClient('mongodb://4.tcp.ngrok.io:14455/')
         db = myclient['EMP-DB']
         col = db["Employee_DB"]
 
@@ -330,7 +330,7 @@ class ActionSubmitLeaveBalance(Action):
         domain: "DomainDict",
     ) -> List[Dict[Text, Any]]:
         # myclient = pymongo.MongoClient('mongodb://192.168.1.104:27017/')
-        myclient = pymongo.MongoClient('mongodb://2.tcp.ngrok.io:14374/')
+        myclient = pymongo.MongoClient('mongodb://4.tcp.ngrok.io:14455/')
         db = myclient['EMP-DB']
         collection_name = 'Employee_DB'
         col = db[collection_name]
@@ -363,7 +363,7 @@ class ActionSubmitPTO(Action):
         domain: "DomainDict",
     ) -> List[Dict[Text, Any]]:
         # myclient = pymongo.MongoClient('mongodb://192.168.1.104:27017/')
-        myclient = pymongo.MongoClient('mongodb://2.tcp.ngrok.io:14374/')
+        myclient = pymongo.MongoClient('mongodb://4.tcp.ngrok.io:14455/')
         db = myclient['EMP-DB']
         collection_name = 'Employee_DB'
         col = db[collection_name]
@@ -395,7 +395,7 @@ class ActionSubmitFetchPayslip(Action):
         domain: "DomainDict",
     ) -> List[Dict[Text, Any]]:
         # myclient = pymongo.MongoClient('mongodb://192.168.1.104:27017/')
-        myclient = pymongo.MongoClient('mongodb://2.tcp.ngrok.io:14374/')
+        myclient = pymongo.MongoClient('mongodb://4.tcp.ngrok.io:14455/')
         db = myclient['EMP-DB']
         payslips_col = db["Payslips_DB"]
         emp_id = tracker.get_slot("EMP_ID")

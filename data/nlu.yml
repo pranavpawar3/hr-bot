@@ -17,6 +17,7 @@ nlu:
     - leave balance
     - Leave balance
     - check my leave balance
+    - great, whats the leave balance now?
 - intent: pto_balance
   examples: |
     - Can you check my PTO balance?
@@ -172,6 +173,7 @@ nlu:
     - logout
     - LOGOUT
     - logout please
+    - Logout
 - intent: bot_challenge
   examples: |
     - are you a bot?
